@@ -17,44 +17,48 @@ const InfoCard = ({ departmentName }) => {
 
 const AdminDashboard = () => {
     return (
-        <div className="flex flex-wrap justify-between items-start">
-            <NavLink to="/admin" className="mx-auto lg:mx-0">
-                <Button variant="ezDues" className="text-lg py-6 px-7">
-                    + Add Department
-                </Button>
-            </NavLink>
-            <div className="flex w-full flex-wrap justify-evenly items-start lg:flex-nowrap">
-                <InfoCard
-                    departmentName="Department Of Computer Science And Engineering"
-                />
-                <InfoCard
-                    departmentName="Department Of Electrical Engineering"
-                />
-                <InfoCard
-                    departmentName="Department Of Mechanical Engineering"
-                />
+        <div className="relative">
+            <div className="fixed bottom-10 right-10 z-50">
+                <NavLink to="/admin">
+                    <Button variant="ezDues" className="text-lg py-6 px-7">
+                        + Add Department
+                    </Button>
+                </NavLink>
             </div>
-            <div className="flex w-full flex-wrap justify-evenly items-start lg:flex-nowrap">
-                <InfoCard
-                    departmentName="Department Of Metallurgical Engineering"
-                />
-                <InfoCard
-                    departmentName="Department Of Mathematics and Computing"
-                />
-                <InfoCard
-                    departmentName="Department Of Computer Science And Engineering"
-                />
-            </div>
-            <div className="flex w-full flex-wrap justify-evenly items-start lg:flex-nowrap">
-                <InfoCard
-                    departmentName="Department Of Computer Science And Engineering"
-                />
-                <InfoCard
-                    departmentName="Department Of Computer Science And Engineering"
-                />
-                <InfoCard
-                    departmentName="Department Of Computer Science And Engineering"
-                />
+            <div className="flex flex-wrap justify-between items-start">
+                <div className="flex w-full flex-wrap justify-evenly items-start lg:flex-nowrap">
+                    <InfoCard
+                        departmentName="Department Of Computer Science And Engineering"
+                    />
+                    <InfoCard
+                        departmentName="Department Of Electrical Engineering"
+                    />
+                    <InfoCard
+                        departmentName="Department Of Mechanical Engineering"
+                    />
+                </div>
+                <div className="flex w-full flex-wrap justify-evenly items-start lg:flex-nowrap">
+                    <InfoCard
+                        departmentName="Department Of Metallurgical Engineering"
+                    />
+                    <InfoCard
+                        departmentName="Department Of Mathematics and Computing"
+                    />
+                    <InfoCard
+                        departmentName="Department Of Computer Science And Engineering"
+                    />
+                </div>
+                <div className="flex w-full flex-wrap justify-evenly items-start lg:flex-nowrap">
+                    <InfoCard
+                        departmentName="Department Of Computer Science And Engineering"
+                    />
+                    <InfoCard
+                        departmentName="Department Of Computer Science And Engineering"
+                    />
+                    <InfoCard
+                        departmentName="Department Of Computer Science And Engineering"
+                    />
+                </div>
             </div>
         </div>
     );
