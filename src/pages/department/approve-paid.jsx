@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Search, CheckCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Search, CheckCheck, CircleOff, Ban } from "lucide-react";
 
 import images from "@/constants/images";
 import { Button } from "@/components/ui/button";
@@ -22,48 +22,49 @@ const PaidFines = () => {
     setFilteredStudents(results);
   };
 
-  const studentDetails = [
-    {
-      name: "Hemant Kumar",
-      roll: "2301CS20",
-      fineAmount: 1000,
-    },
-    {
-      name: "Bibhuti Jha",
-      roll: "2301AI37",
-      fineAmount: 1000,
-    },
-    {
-      name: "Kushal Agarwal",
-      roll: "2201MC22",
-      fineAmount: 1000,
-    },
-    {
-      name: "Himanshu",
-      roll: "2201MC18",
-      fineAmount: 1000,
-    },
-    {
-      name: "Hemant Kumar",
-      roll: "2301CS20",
-      fineAmount: 1000,
-    },
-    {
-      name: "Bibhuti Jha",
-      roll: "2301AI37",
-      fineAmount: 1000,
-    },
-    {
-      name: "Kushal Agarwal",
-      roll: "2201MC22",
-      fineAmount: 1000,
-    },
-    {
-      name: "Himanshu",
-      roll: "2201MC18",
-      fineAmount: 1000,
-    },
-  ];
+  const [studentDetails, setStudentDetails] = useState([]);
+  const completeData = async (data) => {
+    try {
+      for (let i = 0; i < data.length; i++) {
+        const request = data[i];
+        const studentDetail = await fetch(
+          `http://localhost:5000/department/get-students/${encodeURIComponent(
+            request.studentEmail
+          )}`,
+          { method: "GET", credentials: "include" }
+        ).then((resStudent) => resStudent.json());
+
+        data[i].name = studentDetail.name;
+      }
+      return new Promise((resolve) => {
+        resolve(data);
+      });
+    } catch (e) {
+      console.log(e);
+      return new Promise((resolve, reject) => {
+        reject();
+      });
+    }
+  };
+  const fetchData = () => {
+    fetch("http://localhost:5000/department/get-fines", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        let fines = data.fines;
+        fines = fines.filter((fine) => fine.status == "Pending");
+        completeData(fines).then((studentDetails) => {
+          console.log(studentDetails);
+          setStudentDetails(studentDetails);
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+  useEffect(fetchData, []);
 
   const studentsToDisplay = searchStudent ? filteredStudents : studentDetails;
   const indexOfLastStudent = currentPage * studentsPerPage;
@@ -88,7 +89,26 @@ const PaidFines = () => {
   };
   const approveHandler = (event) => {
     //using api to add fines
-    console.log(event);
+    fetch(
+      `http://localhost:5000/department/fine-approval/${event.target.getAttribute(
+        "data-rollno"
+      )}/${event.target.getAttribute("data-fineid")}/approve`,
+      { method: "put", credentials: "include" }
+    );
+    location.reload();
+  };
+  const rejectHandler = (event) => {
+    //using api to add fines
+    fetch(
+      `http://localhost:5000/department/fine-approval/${event.target.getAttribute(
+        "data-rollno"
+      )}/${event.target.getAttribute("data-fineid")}/reject`,
+      { method: "put", credentials: "include" }
+    ).then((res) => {
+      if (res.status == 200) {
+        location.reload();
+      }
+    });
   };
   const paymentProofHandler = (event) => {
     //using api to add fines
@@ -138,23 +158,24 @@ const PaidFines = () => {
               className="w-full p-7 h-auto rounded-[20px] flex flex-col lg:flex-row bg-[#fff] justify-between flex-wrap mb-5"
             >
               <div className="flex w-full lg:w-auto flex-row justify-start items-center basis-1/3">
-                <img
-                  src={images.Profile}
-                  className="w-[54.874px] h-[54.874px] ml-2 mb-2 rounded-full border-2 border-blue-500"
+                <div
+                  className="w-[54.874px] h-[54.874px] ml-2 mb-2 rounded-full border-2 flex justify-center items-center text-3xl font-regular text-gray-400 bg-gray-200"
                   alt="profile"
-                />
+                >
+                  {studentDetail.name[0].toUpperCase()}
+                </div>
                 <div className="ml-[30px] font-medium md:text-[20px]">
                   {studentDetail.name}
                   <br />
                   <div className="md:text-[20px] text-[#787878] font-light">
-                    {studentDetail.roll}
+                    {studentDetail.studentRollNumber}
                   </div>
                 </div>
               </div>
               <div className="flex flex-col justify-start items-start lg:text-[20px] font-light mb-7 basis-1/3 mt-7 md:mt-auto">
                 <div className="text-sm text-[#787878]">Fine Amount</div>
                 <div className="text-[#538ff8] font-medium">
-                  Rs {studentDetail.fineAmount}
+                  Rs {studentDetail.amount}
                 </div>
               </div>
               <div className="flex flex-col md:flex-row justify-start items-start md:basis-1/3 basis-1 mt-7 xl:mt-0">
@@ -174,14 +195,26 @@ const PaidFines = () => {
                     Payment Proof
                   </Button>
                 </div>
-
-                <Button
-                  variant="ezDues"
-                  className=" lg:text-lg rounded-md lg:py-6 py-5 my-5 md:my-0 w-full md:w-1/2"
-                  onClick={approveHandler}
-                >
-                  <CheckCheck /> Approve
-                </Button>
+                <div className="flex flex-col gap-3 flex-1  w-full md:w-auto">
+                  <Button
+                    variant="ezDues"
+                    className=" lg:text-lg rounded-md py-5 px-5 md:my-0 w-full md:w-1/2 min-w-[150px]"
+                    data-rollno={studentDetail.studentRollNumber}
+                    data-fineid={studentDetail.fineId}
+                    onClick={approveHandler}
+                  >
+                    <CheckCheck size={30} className="mr-3" /> Approve
+                  </Button>
+                  <Button
+                    variant="ezDues"
+                    className=" lg:text-lg rounded-md py-5 px-5 md:my-0 w-full md:w-1/2 min-w-[150px] bg-red-600"
+                    data-rollno={studentDetail.studentRollNumber}
+                    data-fineid={studentDetail.fineId}
+                    onClick={rejectHandler}
+                  >
+                    <Ban size={20} className="mr-3" /> Reject
+                  </Button>
+                </div>
               </div>
             </div>
           ))}

@@ -1,70 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "lucide-react";
-import images from "@/constants/images";
+// import images from "@/constants/images";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const SearchStudent = () => {
   const [searchStudent, setSearchStudent] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const studentsPerPage = 5;
+  const navigator = useNavigate();
 
-  const [studentDetails, setStudentDetails] = useState([
-    {
-      name: "Hemant Kumar",
-      roll: "2301CS20",
-      department: "CSE",
-      role: "BTech",
-      batch: "2023-27",
-      pendingDues: false,
-    },
-    {
-      name: "Kushal Agarwal",
-      roll: "2301CS20",
-      department: "CSE",
-      role: "BTech",
-      batch: "2023-27",
-      pendingDues: false,
-    },
-    {
-      name: "Hemant Kumar",
-      roll: "2301CS20",
-      department: "CSE",
-      role: "BTech",
-      batch: "2023-27",
-      pendingDues: false,
-    },
-    {
-      name: "Hemant Kumar",
-      roll: "2301CS20",
-      department: "CSE",
-      role: "BTech",
-      batch: "2023-27",
-      pendingDues: false,
-    },
-    {
-      name: "Hemant Kumar",
-      roll: "2301CS20",
-      department: "CSE",
-      role: "BTech",
-      batch: "2023-27",
-      pendingDues: false,
-    },
-    {
-      name: "Hemant Kumar",
-      roll: "2301CS20",
-      department: "CSE",
-      role: "BTech",
-      batch: "2023-27",
-      pendingDues: false,
-    },
-    // Add more student details...
-  ]);
+  const [studentDetails, setStudentDetails] = useState([]);
+  useEffect(() => {
+    fetch("http://localhost:5000/department/get-students", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setStudentDetails(data);
+      });
+  }, []);
 
   const filteredStudents = studentDetails.filter(
     (student) =>
       student.name.toLowerCase().includes(searchStudent.toLowerCase()) ||
-      student.roll.toLowerCase().includes(searchStudent.toLowerCase()) ||
-      student.department.toLowerCase().includes(searchStudent.toLowerCase())
+      student.rollNumber.toLowerCase().includes(searchStudent.toLowerCase()) ||
+      student.branch.toLowerCase().includes(searchStudent.toLowerCase())
   );
 
   const indexOfLastStudent = currentPage * studentsPerPage;
@@ -94,7 +57,10 @@ const SearchStudent = () => {
   };
 
   const addFineHandler = (event) => {
-    console.log(event);
+    let name = event.target.getAttribute("data-name");
+    let rollno = event.target.getAttribute("data-rollno");
+    let mail = event.target.getAttribute("data-mail");
+    navigator(`/department/new?name=${name}&rollno=${rollno}&mail=${mail}`);
   };
 
   return (
@@ -137,24 +103,23 @@ const SearchStudent = () => {
               className="w-full p-5 h-auto rounded-[20px] flex flex-col lg:flex-row bg-[#fff] justify-between flex-wrap mb-2"
             >
               <div className="flex flex-row justify-start items-center basis-1/3">
-                <img
-                  src={images.Profile}
-                  className="w-[54.874px] h-[54.874px] ml-2 mb-2 rounded-full border-2 border-blue-500"
+                <div
+                  className="w-[54.874px] h-[54.874px] ml-2 mb-2 rounded-full border-2  flex justify-center items-center text-3xl font-regular text-gray-400 bg-gray-200"
                   alt="profile"
-                />
+                >
+                  {studentDetail.name[0].toUpperCase()}
+                </div>
                 <div className="ml-[30px] font-medium md:text-[20px] text-[12px]">
                   {studentDetail.name}
                   <br />
                   <div className="md:text-[20px] text-[12px] font-light">
-                    {studentDetail.roll}
+                    {studentDetail.rollNumber}
                   </div>
                 </div>
               </div>
               <div className="flex flex-row justify-start items-center text-[12px] lg:text-[20px] font-light mb-7 basis-1/3">
                 <div className="mr-4 md:mr-[27px]">{studentDetail.role}</div>
-                <div className="mr-4 md:mr-[27px]">
-                  {studentDetail.department}
-                </div>
+                {/* <div className="mr-4 md:mr-[27px]">{studentDetail.branch}</div> */}
                 <div className="mr-4 md:mr-[27px]">{studentDetail.batch}</div>
               </div>
               <div className="flex flex-row justify-center items-center md:basis-1/3 basis-1">
@@ -168,6 +133,9 @@ const SearchStudent = () => {
                 <Button
                   variant="ezDues"
                   className=" lg:text-lg w-auto md:w-1/2 rounded-md lg:py-6 flex-1 py-5"
+                  data-name={studentDetail.name}
+                  data-rollno={studentDetail.rollNumber}
+                  data-mail={studentDetail.email}
                   onClick={addFineHandler}
                 >
                   + Add Fine

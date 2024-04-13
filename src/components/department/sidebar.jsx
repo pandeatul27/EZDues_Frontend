@@ -11,6 +11,18 @@ import { Button } from "@/components/ui/button";
 import { NavLink } from "react-router-dom";
 
 const SidebarContent = () => {
+  const sendReminder = () => {
+    fetch("http://localhost:5000/department/send-reminder", {
+      method: "PUT",
+      credentials: "include",
+    }).then((res) => {
+      if (res.status == 200) {
+        alert("Reminder sent successfully");
+      } else {
+        alert("Error while sending reminder");
+      }
+    });
+  };
   return (
     <>
       <div className="flex flex-col items-start justify-center gap-4">
@@ -64,13 +76,13 @@ const SidebarContent = () => {
         </NavLink>
       </div>
       <div className="flex flex-col gap-5 ml-5">
-        <NavLink
-          className="text-md w-full rounded-md text-[#538ff8]"
-          to="/department"
+        <div
+          className="text-md w-full rounded-md text-[#538ff8] cursor-pointer"
+          onClick={sendReminder}
         >
           <BellPlus className="inline mx-2" size={20} />
           Send Reminder
-        </NavLink>
+        </div>
         <NavLink to="/department/new">
           <Button variant="ezDues" className="text-lg py-6 px-7">
             + New Fine
