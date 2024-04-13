@@ -90,18 +90,21 @@ const StudentProfile = () => {
             Fines
           </div>
           <div className="flex-col lg:w-[500px] lg:md:w-[666px] overflow-y-auto max-h-[500px]">
-            {fines.map((fine) => {
-              <div className="rounded-2xl bg-[#f4f4f7] my-4 py-5 text-3xl">
+            {fines.map((fine, index) => (
+              <div
+                key={index}
+                className="rounded-2xl bg-[#f4f4f7] my-4 py-5 text-3xl"
+              >
                 <div className="grid grid-cols-5 content-center">
                   <div className="col-span-4 mx-12 items-center">
-                    <p>P</p>
+                    <p>{fine.amount}</p>
                   </div>
                   <div className="flex items-center justify-self-center">
                     <CircleArrowRight size={40} />
                   </div>
                 </div>
-              </div>;
-            })}
+              </div>
+            ))}
           </div>
         </div>
       </div>
