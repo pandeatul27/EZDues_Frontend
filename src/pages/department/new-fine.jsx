@@ -63,6 +63,7 @@ const NewFine = () => {
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              required
             />
           </div>
           <div className="flex items-center w-full md:w-auto">
@@ -74,6 +75,7 @@ const NewFine = () => {
               placeholder="Roll Number"
               value={rollno}
               onChange={(e) => setRollno(e.target.value)}
+              required
             />
           </div>
         </div>
@@ -86,6 +88,7 @@ const NewFine = () => {
             placeholder="Web-mail"
             value={mail}
             onChange={(e) => setMail(e.target.value)}
+            required
           />
         </div>
         <div className="flex flex-col md:flex-row mb-8">
@@ -100,6 +103,7 @@ const NewFine = () => {
               className="border-b-2 border-black border-opacity-50 px-3 py-2 focus:outline-none bg-transparent w-full"
               type="text"
               placeholder="Amount"
+              required
             />
           </div>
           <div className="flex items-center w-full md:w-auto">
@@ -111,6 +115,7 @@ const NewFine = () => {
               type="date"
               placeholder="Due Date"
               min={new Date().toISOString().split("T")[0]}
+              required
             />
           </div>
         </div>
@@ -125,6 +130,7 @@ const NewFine = () => {
             className="border-b-2 border-black border-opacity-50 px-3 py-2 focus:outline-none bg-transparent w-full"
             type="text"
             placeholder="Reason"
+            required
           />
         </div>
         <div className="flex flex-col items-center mb-8 ">
@@ -138,6 +144,7 @@ const NewFine = () => {
                 id="upload"
                 accept="image/*"
                 className="hidden"
+                required
               />
             </label>
             <label

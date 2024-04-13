@@ -17,7 +17,7 @@ const PaidFines = () => {
     const results = studentDetails.filter(
       (student) =>
         student.name.toLowerCase().includes(value.toLowerCase()) ||
-        student.roll.toLowerCase().includes(value.toLowerCase())
+        student.studentRollNumber.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredStudents(results);
   };
