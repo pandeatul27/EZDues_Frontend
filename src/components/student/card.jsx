@@ -75,7 +75,7 @@ const StudentCard = (props) => {
   };
 
   return (
-    <div className="box hover:shadow-md">
+    <div className="box shadow-sm hover:shadow-md">
       <div className={getRectangleClassName()}>
         <div className="heading-4">{dept}</div>
         {renderRequestElement()}
