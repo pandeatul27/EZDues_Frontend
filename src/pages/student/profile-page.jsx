@@ -3,6 +3,7 @@ import images from "@/constants/images";
 import { CircleArrowRight, LogOut } from "lucide-react";
 import { useMsal } from "@azure/msal-react";
 import { useEffect, useState } from "react";
+import FineModal from "@/components/student/FineModal";
 
 //TODO: extend this to more branches
 const Branch = {
@@ -62,24 +63,27 @@ const StudentProfile = () => {
       </nav>
 
       <div className="flex flex-wrap items-center lg:justify-center max-[768px]:justify-center w-screen bg-white text-black font-heading mt-10 gap-x-10">
-        <div className="flex flex-col items-center rounded-[45px] px-10 py-7 lg:px-20 lg:py-14 text-[#6d718b] bg-[#f4f4f7]">
-          <div className="mb-5 w-24 h-24 flex items-center justify-center rounded-full border-2 border-blue-200">
-            <p className="text-5xl">
-              {accounts[0]?.username[0]?.toUpperCase()}
-            </p>
+        <div className="flex flex-col items-center rounded-[45px] px-20 py-20 lg:px-15 lg:py-20 text-[#6d718b] bg-[#f4f4f7]">
+          <div className="mb-5 w-24 h-24 flex items-center justify-center rounded-full border-2 border-blue-500">
+            <div className="bg-slate-500 text-slate-100 w-[calc(100%-13px)] h-[calc(100%-13px)] flex items-center justify-center rounded-full">
+              <p className="text-5xl">
+                {console.log(accounts[0])}
+                {accounts[0]?.name[0]?.toUpperCase()}
+              </p>
+            </div>
           </div>
           <div className="flex flex-col items-center">
             <p className="font-medium text-black text-lg md:text-xl lg:text-3xl">
               {accounts[0]?.name}
             </p>
-            <p className="lg:text-[25px]">{rollno}</p>
-            <p className="lg:text-xl">B.Tech {Branch[branch]}</p>
-            <p className="text-[14px] text-[#253d91] my-3">
+            <p className="lg:text-[25px]">{rollno.toUpperCase()}</p>
+            <p className="lg:text-[15px]">B.Tech {Branch[branch]}</p>
+            <p className="text-[14px] text-[#253D91] my-5">
               {accounts[0]?.username}
             </p>
             <button
               onClick={() => instance.logoutRedirect()}
-              className="flex justify-center"
+              className="flex justify-center mt-10 text-[15px] text-black"
             >
               <LogOut /> <p className="ml-2">Logout</p>
             </button>
@@ -89,18 +93,28 @@ const StudentProfile = () => {
           <div className="max-[426px]:mt-5 text-2xl lg:text-4xl font-medium text-[#253d91]">
             Fines
           </div>
-          <div className="flex-col lg:w-[500px] lg:md:w-[666px] overflow-y-auto max-h-[500px]">
+          <div className="flex-col lg:w-[500px] lg:md:w-[666px] overflow-y-auto max-h-[500px] box-content pr-5">
             {fines.map((fine, index) => (
               <div
                 key={index}
-                className="rounded-2xl bg-[#f4f4f7] my-4 py-5 text-3xl"
+                className="rounded-2xl bg-[#F4F4F7] my-4 py-5 text-3xl"
               >
                 <div className="grid grid-cols-5 content-center">
                   <div className="col-span-4 mx-12 items-center">
-                    <p>{fine.amount}</p>
+                    <p>{fine.departmentDeptId}</p>
                   </div>
-                  <div className="flex items-center justify-self-center">
-                    <CircleArrowRight size={40} />
+                  <div className="col-span-4 mx-12 items-center text-[18px] text-slate-500">
+                    <p>Rs {fine.amount}</p>
+                  </div>
+                  <div
+                    className="flex items-center justify-self-center cursor-pointer"
+                    onClick={() => {}}
+                  >
+                    <CircleArrowRight
+                      size={50}
+                      fill="#00000050"
+                      stroke="#F4F4F7"
+                    />
                   </div>
                 </div>
               </div>

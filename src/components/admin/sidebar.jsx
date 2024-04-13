@@ -30,6 +30,7 @@ const SidebarContent = () => {
 
       const data = await response.json();
       console.log(data.message);
+      alert("Auto Approve Process has been initiated");
     } catch (error) {
       console.error("Error initiating auto approval:", error);
     }

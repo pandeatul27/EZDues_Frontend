@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import "./home.css";
 import { Filter } from "lucide-react";
 import StudentCard from "@/components/student/card.jsx";
@@ -9,17 +9,22 @@ import { Search } from "lucide-react";
 
 const StudentHome = () => {
   const studentData = [
+    { dept: "Hostel", status: "Initiate Request" },
     { dept: "Department of CSE", status: "Initiate Request" },
     { dept: "Department of EEE", status: "Initiate Request" },
     { dept: "Department of MME", status: "Initiate Request" },
     { dept: "Library", status: "Initiate Request" },
     { dept: "Student Gymkhana", status: "Initiate Request" },
-    { dept: "Hostel", status: "Initiate Request" },
-    { dept: "Library", status: "Initiate Request" },
-    { dept: "Student Gymkhana", status: "Initiate Request" },
-    { dept: "Hostel", status: "Initiate Request" },
+    { dept: "Sports", status: "Initiate Request" },
+    { dept: "Academic section", status: "Initiate Request" },
+    { dept: "Civil Workshop", status: "Initiate Request" },
+    { dept: "Electrical Workshop", status: "Initiate Request" },
+    { dept: "Mechanical Workshop", status: "Initiate Request" },
+    { dept: "Admin section", status: "Initiate Request" },
+    { dept: "Accounts Section", status: "Initiate Request" },
+    { dept: "Computer Centre", status: "Initiate Request" },
+    { dept: "TPC", status: "Initiate Request" },
   ];
-
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("All");
 
@@ -44,75 +49,36 @@ const StudentHome = () => {
   });
 
   return (
-    <div className="pb-10 px-[5%]">
+    <div className="pb-10 pt-5 px-[5%] bg-[#fafafc] min-h-[100vh]">
       <StudentNavbar />
       <div className="search-panel">
-        <Form className="flex">
-          <div className="search-box">
-            <div className="search-icon">
-              <Search size={25} color="#A7AABD" />
+        <div className="flex flex-wrap justify-start items-center">
+          <Form className="flex">
+            <div className="search-box shadow-md">
+              <div className="search-icon">
+                <Search size={25} color="#A7AABD" />
+              </div>
+              <Form.Control
+                type="search"
+                placeholder="Search....."
+                className="me-2 search-inp"
+                aria-label="Search"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-            <Form.Control
-              type="search"
-              placeholder="Search....."
-              className="me-2 search-inp"
-              aria-label="Search"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Button
-            className="filter-btn"
-            onClick={() => handleFilterClick(filterStatus)}
-          >
-            <span className="icon-wrapper mr-1">
-              <Filter size={20} color="#A7AABD" />
-            </span>
-            <span className="text-sm lg:text-base">Filter</span>
-          </Button>
-        </Form>
-      </div>
-      <div className="filter-options">
-        <Button
-          className={`filter-option-btn ${
-            filterStatus === "All"
-              ? "bg-[#538ff8] text-white"
-              : "bg-white text-[#a7aabd]"
-          } `}
-          onClick={() => handleFilterClick("All")}
-        >
-          <span className="text-wrapper">All</span>
-        </Button>
-        <Button
-          className={`filter-option-btn ${
-            filterStatus === "Pending"
-              ? "bg-[#538ff8] text-white"
-              : "bg-white text-[#a7aabd]"
-          } `}
-          onClick={() => handleFilterClick("Pending")}
-        >
-          <span className="text-wrapper">Pending</span>
-        </Button>
-        <Button
-          className={`filter-option-btn ${
-            filterStatus === "Approved"
-              ? "bg-[#538ff8] text-white"
-              : "bg-white text-[#a7aabd]"
-          } `}
-          onClick={() => handleFilterClick("Approved")}
-        >
-          <span className="text-wrapper">Approved</span>
-        </Button>
-      </div>
+          </Form>
+        </div>
 
-      <div className="card-grid">
-        {filteredStudentData.map((student, index) => (
-          <StudentCard
-            key={index}
-            dept={student.dept}
-            status={student.status}
-          />
-        ))}
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 grid-flow-row-dense mt-5">
+          {filteredStudentData.map((student, index) => (
+            <StudentCard
+              key={index}
+              dept={student.dept}
+              status={student.status}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

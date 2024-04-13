@@ -1,11 +1,12 @@
 .box {
-  height: 307px;
+  height: 257px;
   width: 385px;
   position: relative;
   background-color: white;
   border: 3px solid;
   border-color: #f9f9f9;
   border-radius: 22px;
+  position: relative;
 }
 
 .frame-4 {
@@ -20,7 +21,7 @@
   overflow: hidden;
   padding: 17px 33px;
   position: absolute;
-  top: 207px;
+  bottom: 30px;
   width: 201px;
 }
 
@@ -56,7 +57,7 @@
   border: 0;
   /* border-color: #f9f9f9; */
   border-radius: 22px;
-  height: 307px;
+  height: 257px;
   left: 0;
   position: relative;
   top: 0;
@@ -88,14 +89,14 @@
   margin-left: 35px;
 
   position: absolute;
-  top: 207px;
+  bottom: 30px;
 }
 .date {
   color: #545c75;
   /* color: #229e87; */
   font-family: "Poppins-Bold", Helvetica;
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 100;
   letter-spacing: 0;
   line-height: normal;
   align-items: center;
@@ -105,7 +106,7 @@
   padding: 20px 105px;
 
   position: absolute;
-  top: 207px;
+  bottom: 10px;
 }
 
 .box .gray-rectangle {
@@ -113,7 +114,7 @@
   border: 0;
   /* border-color: #f9f9f9; */
   border-radius: 22px;
-  height: 307px;
+  height: 257px;
   left: 0;
   position: relative;
   top: 0;
