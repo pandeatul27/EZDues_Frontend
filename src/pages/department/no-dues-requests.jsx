@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, CheckCheck } from "lucide-react";
-import images from "@/constants/images";
+// import images from "@/constants/images";
 import { Switch } from "@/components/ui/switch";
 
 const Clear = () => {
@@ -20,67 +20,116 @@ const NoDuesRequests = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [studentsPerPage] = useState(5);
   const [filteredStudents, setFilteredStudents] = useState([]);
+  const [autoApprove, setAutoApprove] = useState(false);
 
   const handleSearch = (event) => {
     const value = event.target.value;
     setSearchStudent(value);
     setCurrentPage(1);
-    const results = studentDetails.filter(
+    const results = requestsData.filter(
       (student) =>
         student.name.toLowerCase().includes(value.toLowerCase()) ||
-        student.roll.toLowerCase().includes(value.toLowerCase())
+        student.studentRollNumber.toLowerCase().includes(value.toLowerCase())
     );
     setFilteredStudents(results);
   };
 
   const handleAutoApprove = () => {
     // Handle auto approve API
+    fetch(
+      `http://localhost:5000/department/request-approval/set-auto-approve`,
+      {
+        method: "post",
+        credentials: "include",
+      }
+    )
+      .then((res) => {
+        if (res.status == 200) {
+          setAutoApprove(!autoApprove);
+          console.log("auto approve toggled successfully");
+          location.reload();
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
+  useEffect(() => {
+    // Handle auto approve API
+    fetch(
+      `http://localhost:5000/department/request-approval/get-auto-approve`,
+      {
+        method: "get",
+        credentials: "include",
+      }
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        setAutoApprove(data.autoApprove);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }, []);
 
-  const studentDetails = [
-    {
-      name: "Hemant Kumar",
-      roll: "2301CS20",
-      pendingDues: false,
-    },
-    {
-      name: "Bibhuti Jha",
-      roll: "2301AI37",
-      pendingDues: true,
-    },
-    {
-      name: "Kushal Agarwal",
-      roll: "2201MC22",
-      pendingDues: false,
-    },
-    {
-      name: "Himanshu",
-      roll: "2201MC18",
-      pendingDues: false,
-    },
-    {
-      name: "Hemant Kumar",
-      roll: "2301CS20",
-      pendingDues: false,
-    },
-    {
-      name: "Bibhuti Jha",
-      roll: "2301AI37",
-      pendingDues: true,
-    },
-    {
-      name: "Kushal Agarwal",
-      roll: "2201MC22",
-      pendingDues: false,
-    },
-    {
-      name: "Himanshu",
-      roll: "2201MC18",
-      pendingDues: false,
-    },
-  ];
+  const handleApprove = (e) => {
+    fetch(
+      `http://localhost:5000/department/request-approval/${e.target.getAttribute(
+        "data-rollno"
+      )}/${e.target.getAttribute("data-reqid")}`,
+      { method: "put", credentials: "include" }
+    )
+      .then((res) => {
+        if (res.status == 200) {
+          location.reload();
+        } else if (res.status == 405) {
+          alert("All fines for this student are not cleared yet");
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+  const completeData = async (data) => {
+    try {
+      for (let i = 0; i < data.length; i++) {
+        const request = data[i];
+        const studentDetail = await fetch(
+          `http://localhost:5000/department/get-students/${encodeURIComponent(
+            request.studentEmail
+          )}`,
+          { method: "GET", credentials: "include" }
+        ).then((resStudent) => resStudent.json());
 
-  const studentsToDisplay = searchStudent ? filteredStudents : studentDetails;
+        data[i].name = studentDetail.name;
+      }
+      return new Promise((resolve) => {
+        resolve(data);
+      });
+    } catch (e) {
+      console.log(e);
+      return new Promise((resolve, reject) => {
+        reject();
+      });
+    }
+  };
+  const [requestsData, setRequestsData] = useState([]);
+  useEffect(() => {
+    fetch("http://localhost:5000/department/get-requests", {
+      method: "GET",
+      credentials: "include",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        completeData(data).then((completeData) => {
+          console.log(completeData);
+          setRequestsData(completeData);
+        });
+      });
+  }, []);
+
+  const studentsToDisplay = searchStudent ? filteredStudents : requestsData;
   const indexOfLastStudent = currentPage * studentsPerPage;
   const indexOfFirstStudent = indexOfLastStudent - studentsPerPage;
   const currentStudents = studentsToDisplay.slice(
@@ -117,10 +166,11 @@ const NoDuesRequests = () => {
             <div className="md:text-[20px] text-xs mr-10 md:pt-2 ">
               Auto Approve
             </div>
-            <div onClick={handleAutoApprove}>
+            <div>
               <Switch
                 className="bg-[#538ff8]"
                 onClick={handleAutoApprove}
+                checked={autoApprove}
               ></Switch>
             </div>
           </div>
@@ -148,32 +198,30 @@ const NoDuesRequests = () => {
               className="w-full p-2 px-5 h-auto md:min-h-[107px] rounded-[20px] flex flex-col lg:flex-row bg-[#fff] flex-wrap"
               style={{ marginBottom: "0.5rem" }}
             >
-              <div className="flex flex-row justify-start items-center md:basis-1/3 ">
-                <img
-                  src={images.Profile}
-                  className="w-[54.874px] h-[54.874px] ml-2 mb-2 rounded-full border-2 border-blue-500"
+              <div className="flex flex-row justify-start items-center md:basis-1/3">
+                <div
+                  className="w-[54.874px] h-[54.874px] ml-2 mb-2 rounded-full border-2 flex justify-center items-center text-3xl font-regular text-gray-400 bg-gray-200"
                   alt="profile"
-                />
+                >
+                  {studentDetail.name[0].toUpperCase()}
+                </div>
                 <div className="ml-[30px] font-medium md:text-[20px] text-[12px]">
                   {studentDetail.name}
                   <br />
                   <div className="md:text-[20px] text-[12px] font-light">
-                    {studentDetail.roll}
+                    {studentDetail.studentRollNumber}
                   </div>
                 </div>
               </div>
               <div className="flex flex-row justify-start items-center md:basis-1/3 ">
-                <div className="md:text-[16px] text-[10px] font-light mr-10">
-                  Status
-                </div>
                 <div>{studentDetail.pendingDues ? <Pending /> : <Clear />}</div>
               </div>
               <div className="w-full md:w-auto flex flex-row justify-end items-center md:basis-1/3">
                 <button
                   className="flex md:w-[264px] w-full md:h-[55px] h-2/3 px-[33px] py-2 md:py-5 my-5 md:my-1 justify-center items-center gap-[10px] flex-shrink-0 rounded-[10px] bg-[#2bc9ac] text-white"
-                  onClick={() => {
-                    /* add onclick functionality here */
-                  }}
+                  data-rollno={studentDetail.studentRollNumber}
+                  data-reqid={studentDetail.requestId}
+                  onClick={handleApprove}
                 >
                   <CheckCheck /> Approve No Dues
                 </button>

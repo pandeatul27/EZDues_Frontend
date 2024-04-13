@@ -3,8 +3,6 @@ import images from "@/constants/images";
 import { CircleArrowRight, LogOut } from "lucide-react";
 import { useMsal } from "@azure/msal-react";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import FineModal from "@/components/student/FineModal";
 
 //TODO: extend this to more branches
 const Branch = {
@@ -15,60 +13,29 @@ const Branch = {
   me: "ME",
   cb: "CBE",
 };
-const dummyFines = [
-  {
-    name: "Hostel Walls Fine",
-    payment: "500",
-    issued_on: "15-01-2024",
-    issued_by: "Gymkhana",
-    reason: "Student entered Gymkhana badminton court without wearing non marking shoes",
-  },
-  {
-    name: "Chemistry Lab Breaking",
-    payment: "700",
-    issued_on: "18-01-2024",
-    issued_by: "Academic",
-    reason: "Student broke the test tube in the Chemistry lab",
-  },
-  {
-    name: "Badminton Court Shoes Fine",
-    payment: "1200",
-    issued_on: "17-01-2024",
-    issued_by: "Gymkhana",
-    reason:
-      "Student Entered Gymkhana Badminton Court without wearing non marking shoes",
-  },
-];
 const StudentProfile = () => {
+  const [fines, setFines] = useState([]);
   const { accounts, instance } = useMsal();
-  const [modalData, setModalData] = useState({});
-  const [isOpen, setIsOpen] = useState(false);
-  const rollno = accounts[0]?.username.match(/(\d{4}[a-zA-Z]{2}\d{2})/)[0];
-  const branch = rollno?.match(/[a-zA-Z]+/)[0];
-  const getStudentFines = async () => {
-    const accessTokenRequest = {
-      account: accounts[0],
-    };
-    try {
-      const res = await instance.acquireTokenSilent(accessTokenRequest);
-      const resp = await axios.get("http://localhost:5000/student/fines", {
-        headers: {
-          "X-EZDues-IDToken": res?.idToken,
-        },
-      });
-      console.log(resp.data);
-    } catch (error) {
-      console.log(error);
-    }
+
+  const accessTokenRequest = {
+    account: accounts[0],
   };
   useEffect(() => {
-    getStudentFines();
+    instance.acquireTokenSilent(accessTokenRequest).then((res) => {
+      fetch("http://localhost:5000/student/fines", {
+        method: "GET",
+        headers: { "X-EZDues-IDToken": res.idToken },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          setFines(data);
+        });
+    });
   }, []);
+  const rollno = accounts[0]?.username.match(/(\d{4}[a-zA-Z]{2}\d{2})/)[0];
+  const branch = rollno?.match(/[a-zA-Z]+/)[0];
   return (
     <>
-      {isOpen && (
-        <FineModal isOpen={isOpen} setIsOpen={setIsOpen} data={modalData} />
-      )}
       <nav>
         <div className="mx-auto px-5 sm:px-20">
           <div className="flex justify-between h-16">
@@ -122,29 +89,19 @@ const StudentProfile = () => {
           <div className="max-[426px]:mt-5 text-2xl lg:text-4xl font-medium text-[#253d91]">
             Fines
           </div>
-          <div className="flex-col lg:w-[500px] lg:md:w-[666px]">
-            {dummyFines.map((fine, i) => (
-              <div
-                key={i}
-                className="rounded-2xl bg-[#f4f4f7] my-4 py-5 text-3xl"
-              >
+          <div className="flex-col lg:w-[500px] lg:md:w-[666px] overflow-y-auto max-h-[500px]">
+            {fines.map((fine) => {
+              <div className="rounded-2xl bg-[#f4f4f7] my-4 py-5 text-3xl">
                 <div className="grid grid-cols-5 content-center">
-                  <div className=" col-span-4 mx-12 items-center">
-                    <p>{fine.name}</p>
+                  <div className="col-span-4 mx-12 items-center">
+                    <p>P</p>
                   </div>
                   <div className="flex items-center justify-self-center">
-                    <CircleArrowRight
-                      size={40}
-                      className="cursor-pointer"
-                      onClick={() => {
-                        setIsOpen(true);
-                        setModalData(fine);
-                      }}
-                    />
+                    <CircleArrowRight size={40} />
                   </div>
                 </div>
-              </div>
-            ))}
+              </div>;
+            })}
           </div>
         </div>
       </div>
